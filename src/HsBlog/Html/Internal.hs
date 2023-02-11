@@ -10,7 +10,12 @@ newtype Html
   = Html String
 
 newtype Structure
-  = Structure String
+  = Structure Content
+
+data Content
+  = Text String
+  | Link String
+  | Image FilePath
 
 instance Semigroup Structure where
   (<>) (Structure a) (Structure b) =
