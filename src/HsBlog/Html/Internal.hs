@@ -1,6 +1,8 @@
 -- Html/Internal.hs
 
-module Html.Internal where
+module HsBlog.Html.Internal where
+
+import Numeric.Natural
 
 -- * Types
 
@@ -9,6 +11,13 @@ newtype Html
 
 newtype Structure
   = Structure String
+
+instance Semigroup Structure where
+  (<>) (Structure a) (Structure b) =
+    Structure (a <> b)
+
+instance Monoid Structure where
+  mempty = Structure ""
 
 type Title
   = String
@@ -27,8 +36,8 @@ html_ title (Structure body) =
 p_ :: String -> Structure
 p_ = Structure . el "p" . escape
 
-h1_ :: String -> Structure
-h1_ = Structure . el "h1" . escape
+h_ :: Natural -> String -> Structure
+h_ n = Structure . el ("h" <> show n) . escape
 
 li_ :: Structure -> Structure
 li_ = Structure . el "li" . getStructureString
@@ -41,9 +50,6 @@ ol_ = tag_ "ol" . flat_ . map li_
 
 code_ :: String -> Structure
 code_ = Structure . el "pre" . escape
-
-append_ :: Structure -> Structure -> Structure
-append_ (Structure a) (Structure b) = Structure (a <> b)
 
 flat_ :: [Structure] -> Structure
 flat_ = Structure . concat . map getStructureString

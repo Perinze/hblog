@@ -1,19 +1,18 @@
 -- Html.hs
 
-module Html
+module HsBlog.Html
   ( Html
   , Title
   , Structure
   , html_
   , p_
-  , h1_
+  , h_
   , ul_
   , ol_
   , code_
-  , append_
   , flat_
   , render
   )
   where
 
-import Html.Internal
+import HsBlog.Html.Internal
