@@ -10,19 +10,10 @@ newtype Html
   = Html String
 
 newtype Structure
-  = Structure Content
+  = Structure String
 
-data Content
-  = Text String
-  | Link String
-  | Image FilePath
-
-instance Semigroup Structure where
-  (<>) (Structure a) (Structure b) =
-    Structure (a <> b)
-
-instance Monoid Structure where
-  mempty = Structure ""
+newtype Content
+  = Content String
 
 type Title
   = String
@@ -56,8 +47,15 @@ ol_ = tag_ "ol" . flat_ . map li_
 code_ :: String -> Structure
 code_ = Structure . el "pre" . escape
 
+instance Semigroup Structure where
+  (<>) c1 c2 =
+    Structure (getStructureString c1 <> getStructureString c2)
+
+instance Monoid Structure where
+  mempty = Structure ""
+
 flat_ :: [Structure] -> Structure
-flat_ = Structure . concat . map getStructureString
+flat_ = Structure . concatMap getStructureString
 
 tag_ :: String -> Structure -> Structure
 tag_ tag = Structure . el tag . getStructureString
@@ -74,7 +72,9 @@ el tag content =
   "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
 
 getStructureString :: Structure -> String
-getStructureString (Structure str) = str
+getStructureString structure =
+  case structure of
+    Structure str -> str
 
 escape :: String -> String
 escape =
@@ -88,4 +88,4 @@ escape =
         '\'' -> "&#39;"
         _ -> [c]
   in
-    concat . map escapeChar
+    concatMap escapeChar
